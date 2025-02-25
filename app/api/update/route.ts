@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
 
 type RequestBody = {
   caster1: string;
@@ -39,8 +40,11 @@ export async function POST(request: Request) {
     });
     const authClient = await auth.getClient();
 
-    // Инициализация клиента Google Sheets
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    // Приводим authClient к типу JWT
+    const jwtClient = authClient as JWT;
+
+    // Инициализация клиента Google Sheets с приведённым типом
+    const sheets = google.sheets({ version: 'v4', auth: jwtClient });
 
     // Обновляем ячейки: B4 для caster1 и C4 для caster2
     await sheets.spreadsheets.values.update({
